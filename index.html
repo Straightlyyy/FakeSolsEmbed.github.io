@@ -1,547 +1,639 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Sol's Embed Generator</title>
     <style>
+      body {
+        font-family: "Whitney", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: #36393f;
+        color: #dcddde;
+        padding: 24px;
+        margin: 0;
+        font-size: 16px;
+      }
+
+      h1 {
+        text-align: center;
+        color: #ffffff;
+        margin-bottom: 20px;
+        font-size: 2rem;
+      }
+
+      .container {
+        display: flex;
+        gap: 18px;
+        flex-wrap: wrap;
+        max-width: 1120px;
+        margin: 0 auto;
+      }
+
+      .card,
+      .preview {
+        flex: 1 1 520px;
+        background: #2f3136;
+        padding: 20px;
+        border-radius: 14px;
+        border: 1px solid #202225;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+      }
+
+      label {
+        display: block;
+        margin-top: 14px;
+        font-weight: 600;
+        color: #b9bbbe;
+        font-size: 0.9rem;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      input,
+      textarea,
+      select {
+        width: 100%;
+        padding: 14px;
+        margin-top: 8px;
+        border-radius: 8px;
+        border: 1px solid #202225;
+        font-size: 17px;
+        background: #202225;
+        color: #dcddde;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      textarea {
+        white-space: pre-wrap;
+        overflow-wrap: break-word;
+        white-space: normal;
+      }
+
+      input:focus,
+      textarea:focus,
+      select:focus {
+        outline: 1px solid #7289da;
+        box-shadow: 0 0 0 1px rgba(114, 137, 218, 0.4);
+      }
+
+      button {
+        margin-top: 20px;
+        padding: 10px 14px;
+        border: none;
+        border-radius: 6px;
+        background: #5865f2;
+        color: #fff;
+        cursor: pointer;
+        font-weight: 600;
+      }
+
+      button:hover {
+        background: #4752c4;
+      }
+
+      .button-row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-top: 16px;
+        flex-wrap: wrap;
+      }
+
+      .copy-btn {
+        background: #43b581;
+      }
+
+      .copy-btn:hover {
+        background: #399569;
+      }
+
+      pre {
+        background: #202225;
+        padding: 14px;
+        border-radius: 8px;
+        margin-top: 20px;
+        white-space: pre-wrap;
+        word-break: break-word;
+        border: 1px solid #18191d;
+        color: #dcddde;
+      }
+
+      .embed {
+        background: #2f3136;
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid #202225;
+      }
+
+      .author {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: bold;
+      }
+
+      .description-container {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .stripe {
+        width: 4px;
+        border-radius: 2px;
+      }
+
+      .desc-text {
+        flex: 1;
+      }
+
+      .blockquote-line {
+        border-left: 4px solid #4f545c;
+        padding-left: 8px;
+        margin: 2px 0;
+      }
+
+      .fields {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+        flex-wrap: wrap;
+      }
+
+      .field {
+        background: #2f3136;
+        padding: 6px 10px;
+        border-radius: 6px;
+      }
+
+      .footer {
+        margin-top: 10px;
+        font-size: 13px;
+        color: #b9bbbe;
+        text-align: left;
+        padding-left: 4px;
+      }
+
+      code {
+        background: #2f3136;
+        padding: 2px 4px;
+        border-radius: 4px;
+      }
+
+      .link-note {
+        font-size: 12px;
+        color: #aaa;
+        margin-top: 5px;
+      }
+
+      a {
+        color: #4cafef;
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      .rarity-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .glitched-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        user-select: none;
+        color: #dcddde;
+        font-size: 0.9rem;
+      }
+
+      .glitched-toggle input {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .custom-checkbox {
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+        border: 1px solid #72767d;
+        background: #202225;
+        display: inline-block;
+        position: relative;
+        transition: all 0.2s ease;
+      }
+
+      .glitched-toggle input:checked + .custom-checkbox {
+        background: #43b581;
+        border-color: #43b581;
+      }
+
+      .custom-checkbox::after {
+        content: "";
+        position: absolute;
+        left: 4px;
+        top: 1px;
+        width: 4px;
+        height: 8px;
+        border: solid #fff;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+        display: none;
+      }
+
+      .glitched-toggle input:checked + .custom-checkbox::after {
+        display: block;
+      }
+
+      @media (max-width: 768px) {
         body {
-            font-family: 'Whitney', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #36393f;
-            color: #dcddde;
-            padding: 24px;
-            margin: 0;
-            font-size: 16px;
+          padding: 14px;
+          font-size: 16px;
         }
 
         h1 {
-            text-align: center;
-            color: #ffffff;
-            margin-bottom: 20px;
-            font-size: 2rem;
+          font-size: 1.8rem;
         }
 
         .container {
-            display: flex;
-            gap: 18px;
-            flex-wrap: wrap;
-            max-width: 1120px;
-            margin: 0 auto;
+          flex-direction: column;
+          max-width: 100%;
+          gap: 14px;
         }
 
         .card,
         .preview {
-            flex: 1 1 520px;
-            background: #2f3136;
-            padding: 20px;
-            border-radius: 14px;
-            border: 1px solid #202225;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
-        }
-
-        label {
-            display: block;
-            margin-top: 14px;
-            font-weight: 600;
-            color: #b9bbbe;
-            font-size: 0.90rem;
-        }
-
-        *,
-        *::before,
-        *::after {
-            box-sizing: border-box;
+          flex: 1 1 100%;
+          padding: 18px;
         }
 
         input,
         textarea,
         select {
-            width: 100%;
-            padding: 14px;
-            margin-top: 8px;
-            border-radius: 8px;
-            border: 1px solid #202225;
-            font-size: 17px;
-            background: #202225;
-            color: #dcddde;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        textarea {
-            white-space: pre-wrap;
-            overflow-wrap: break-word;
-            white-space: normal;
-        }
-
-        input:focus,
-        textarea:focus,
-        select:focus {
-            outline: 1px solid #7289da;
-            box-shadow: 0 0 0 1px rgba(114, 137, 218, 0.4);
+          padding: 13px;
+          font-size: 16px;
         }
 
         button {
-            margin-top: 20px;
-            padding: 10px 14px;
-            border: none;
-            border-radius: 6px;
-            background: #5865f2;
-            color: #fff;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        button:hover {
-            background: #4752c4;
-        }
-
-        .button-row {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            margin-top: 16px;
-            flex-wrap: wrap;
-        }
-
-        .copy-btn {
-            background: #43b581;
-        }
-
-        .copy-btn:hover {
-            background: #399569;
-        }
-
-        pre {
-            background: #202225;
-            padding: 14px;
-            border-radius: 8px;
-            margin-top: 20px;
-            white-space: pre-wrap;
-            word-break: break-word;
-            border: 1px solid #18191d;
-            color: #dcddde;
-        }
-
-        .embed {
-            background: #2f3136;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #202225;
-        }
-
-        .author {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-weight: bold;
-        }
-
-        .description-container {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .stripe {
-            width: 4px;
-            border-radius: 2px;
-        }
-
-        .desc-text {
-            flex: 1;
-        }
-
-        .blockquote-line {
-            border-left: 4px solid #4f545c;
-            padding-left: 8px;
-            margin: 2px 0;
+          width: 100%;
         }
 
         .fields {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-            flex-wrap: wrap;
+          flex-direction: column;
         }
 
-        .field {
-            background: #2f3136;
-            padding: 6px 10px;
-            border-radius: 6px;
+        .description-container {
+          flex-direction: column;
         }
-
-        .footer {
-            margin-top: 10px;
-            font-size: 13px;
-            color: #b9bbbe;
-            text-align: left;
-            padding-left: 4px;
-        }
-
-        code {
-            background: #2f3136;
-            padding: 2px 4px;
-            border-radius: 4px;
-        }
-
-        .link-note {
-            font-size: 12px;
-            color: #aaa;
-            margin-top: 5px;
-        }
-
-        a {
-            color: #4cafef;
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        .rarity-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .glitched-toggle {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            user-select: none;
-            color: #dcddde;
-            font-size: 0.9rem;
-        }
-
-        .glitched-toggle input {
-            position: absolute;
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .custom-checkbox {
-            width: 16px;
-            height: 16px;
-            border-radius: 4px;
-            border: 1px solid #72767d;
-            background: #202225;
-            display: inline-block;
-            position: relative;
-            transition: all 0.2s ease;
-        }
-
-        .glitched-toggle input:checked+.custom-checkbox {
-            background: #43b581;
-            border-color: #43b581;
-        }
-
-        .custom-checkbox::after {
-            content: '';
-            position: absolute;
-            left: 4px;
-            top: 1px;
-            width: 4px;
-            height: 8px;
-            border: solid #fff;
-            border-width: 0 2px 2px 0;
-            transform: rotate(45deg);
-            display: none;
-        }
-
-        .glitched-toggle input:checked+.custom-checkbox::after {
-            display: block;
-        }
-
-        @media (max-width: 768px) {
-            body {
-                padding: 14px;
-                font-size: 16px;
-            }
-
-            h1 {
-                font-size: 1.8rem;
-            }
-
-            .container {
-                flex-direction: column;
-                max-width: 100%;
-                gap: 14px;
-            }
-
-            .card,
-            .preview {
-                flex: 1 1 100%;
-                padding: 18px;
-            }
-
-            input,
-            textarea,
-            select {
-                padding: 13px;
-                font-size: 16px;
-            }
-
-            button {
-                width: 100%;
-            }
-
-            .fields {
-                flex-direction: column;
-            }
-
-            .description-container {
-                flex-direction: column;
-            }
-        }
+      }
     </style>
-</head>
+  </head>
 
-<body>
-
+  <body>
     <h1>Sol's Embed Generator</h1>
 
     <div class="container">
-        <div class="card">
-            <label>Top Username</label>
-            <input id="topUsername" placeholder="DisplayName(@Username)" oninput="updatePreview()" />
+      <div class="card">
+        <label>Top Username</label>
+        <input
+          id="topUsername"
+          placeholder="DisplayName(@Username)"
+          oninput="updatePreview()"
+        />
 
-            <label>Description</label>
-            <textarea id="description"
-                placeholder="**The Blinding Light** has devoured **Username** (Use &quot;**Message**&quot; for bold text)"
-                oninput="updatePreview()"></textarea>
+        <label>Description</label>
+        <textarea
+          id="description"
+          placeholder='**The Blinding Light** has devoured **Username** (Use "**Message**" for bold text)'
+          oninput="updatePreview()"
+        ></textarea>
 
-            <label>Star & Stripe Color</label>
-            <select id="stripeColor" onchange="updatePreview(); updateEmojiByStripe();">
-                <option value="#4d5efa">Default</option>
-                <option value="#a5dffa">Luminosity</option>
-                <option value="#5b50d1">Breakthrough</option>
-                <option value="#874dfa">Oblivion</option>
-                <option value="#5844ba">Memory</option>
-                <option value="#fa4d4d">PIXELATION</option>
-                <option value="#24b9be">Leviathan</option>
-                <option value="#808080">EQUINOX</option>
-                <option value="#410594">Monarch</option>
-            </select>
-            <label>Rolls</label>
-            <input id="rolls" placeholder="---,---,---" oninput="updatePreview()" />
+        <label>Star & Stripe Color</label>
+        <select
+          id="stripeColor"
+          onchange="
+            updatePreview();
+            updateEmojiByStripe();
+          "
+        >
+          <option value="#4d5efa">Default</option>
+          <option value="#a5dffa">Luminosity</option>
+          <option value="#5b50d1">Breakthrough</option>
+          <option value="#874dfa">Oblivion</option>
+          <option value="#5844ba">Memory</option>
+          <option value="#fa4d4d">PIXELATION</option>
+          <option value="#24b9be">Leviathan</option>
+          <option value="#808080">EQUINOX</option>
+          <option value="#410594">Monarch</option>
+          <option value="#c96fed">Dreammetric</option>
+          <option value="#090909">Oppression</option>
+          <option value="#0436a1">Illusionary</option>
+        </select>
+        <label>Rolls</label>
+        <input id="rolls" placeholder="---,---,---" oninput="updatePreview()" />
 
-            <label>Rarity</label>
-            <div class="rarity-container">
-                <input id="rarity" placeholder="---,---,---" oninput="updatePreview()" />
-                <label class="glitched-toggle">
-                    <input type="checkbox" id="fromGlitched" onchange="updatePreview()" />
-                    <span class="custom-checkbox"></span>
-                    <span>From Glitched!</span>
-                </label>
-            </div>
-
-            <label>Luck</label>
-            <input id="luck" placeholder="---,---.---" oninput="updatePreview()" />
-
-            <label>Unix Timestamp</label>
-            <input id="timestamp" placeholder="0000000000" oninput="updatePreview()" />
-            <div class="link-note"><a href="https://www.unixtimestamp.com" target="_blank"
-                    rel="noopener noreferrer">Check current timestamp</a></div>
-
-            <div class="button-row">
-                <button onclick="generateJSON()">Generate JSON</button>
-                <button onclick="copyJSON()" class="copy-btn">Copy JSON</button>
-            </div>
-
-            <div class="link-note"><a href="https://discohook.org/" target="_blank" rel="noopener noreferrer">Paste your
-                    JSON code under the "JSON DATA EDITOR" tab</a></div>
-
+        <label>Rarity</label>
+        <div class="rarity-container">
+          <input
+            id="rarity"
+            placeholder="---,---,---"
+            oninput="updatePreview()"
+          />
+          <label class="glitched-toggle">
+            <input
+              type="checkbox"
+              id="fromGlitched"
+              onchange="updatePreview()"
+            />
+            <span class="custom-checkbox"></span>
+            <span>From Glitched!</span>
+          </label>
         </div>
 
-        <div class="preview">
-            <h2>Live Preview</h2>
-            <div class="embed">
-                <div class="author">
-                    <img id="previewEmoji" style="height:20px; display:none;" />
-                    <span id="previewUsername"></span>
-                </div>
-                <div class="description-container">
-                    <div class="stripe"></div>
-                    <div class="desc-text"></div>
-                </div>
-                <div class="fields"></div>
-                <div class="footer"></div>
-            </div>
-            <pre id="output"></pre>
+        <label>Luck</label>
+        <input id="luck" placeholder="---,---.---" oninput="updatePreview()" />
+
+        <label>Unix Timestamp</label>
+        <input
+          id="timestamp"
+          placeholder="0000000000"
+          oninput="updatePreview()"
+        />
+        <div class="link-note">
+          <a
+            href="https://www.unixtimestamp.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Check current timestamp</a
+          >
         </div>
+
+        <div class="button-row">
+          <button onclick="generateJSON()">Generate JSON</button>
+          <button onclick="copyJSON()" class="copy-btn">Copy JSON</button>
+        </div>
+
+        <div class="link-note">
+          <a
+            href="https://discohook.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Paste your JSON code under the "JSON DATA EDITOR" tab</a
+          >
+        </div>
+      </div>
+
+      <div class="preview">
+        <h2>Live Preview</h2>
+        <div class="embed">
+          <div class="author">
+            <img id="previewEmoji" style="height: 20px; display: none" />
+            <span id="previewUsername"></span>
+          </div>
+          <div class="description-container">
+            <div class="stripe"></div>
+            <div class="desc-text"></div>
+          </div>
+          <div class="fields"></div>
+          <div class="footer"></div>
+        </div>
+        <pre id="output"></pre>
+      </div>
     </div>
 
     <script>
-        const stripeEmojiMap = {
-            "#4d5efa": "https://cdn.mongoosee.com/assets/stars/Global.png",
-            "#a5dffa": "https://cdn.mongoosee.com/assets/stars/Luminosity.png",
-            "#5b50d1": "https://cdn.mongoosee.com/assets/stars/BREAKTHROUGH.png",
-            "#874dfa": "https://cdn.mongoosee.com/assets/stars/Oblivion.png",
-            "#5844ba": "https://cdn.mongoosee.com/assets/stars/Memory.png",
-            "#fa4d4d": "https://cdn.mongoosee.com/assets/stars/Pixelation.png",
-            "#24b9be": "https://cdn.mongoosee.com/assets/stars/LEVIATHAN.png",
-            "#808080": "https://cdn.mongoosee.com/assets/stars/Equinox.png",
-            "#410594": "https://cdn.mongoosee.com/assets/stars/Monarch.png"
+      const stripeEmojiMap = {
+        "#4d5efa": "https://cdn.mongoosee.com/assets/stars/Global.png",
+        "#a5dffa": "https://cdn.mongoosee.com/assets/stars/Luminosity.png",
+        "#5b50d1": "https://cdn.mongoosee.com/assets/stars/BREAKTHROUGH.png",
+        "#874dfa": "https://cdn.mongoosee.com/assets/stars/Oblivion.png",
+        "#5844ba": "https://cdn.mongoosee.com/assets/stars/Memory.png",
+        "#fa4d4d": "https://cdn.mongoosee.com/assets/stars/Pixelation.png",
+        "#24b9be": "https://cdn.mongoosee.com/assets/stars/LEVIATHAN.png",
+        "#808080": "https://cdn.mongoosee.com/assets/stars/Equinox.png",
+        "#410594": "https://cdn.mongoosee.com/assets/stars/Monarch.png",
+        "#c96fed": "https://cdn.solsstattracker.com/stars/Dreammetric.png",
+        "#090909": "https://cdn.solsstattracker.com/stars/Oppression.png",
+        "#0436a1": "https://images-ext-1.discordapp.net/external/hYAOyw-uMZaacUfcZOTxL-LAiIm3dFT3g929IjK4Ico/https/cdn.solsstattracker.com/stars/Illusionary.png"
+      };
+
+      function updateEmojiByStripe() {
+        const stripe = document.getElementById("stripeColor").value;
+        const emojiImg = document.getElementById("previewEmoji");
+        if (stripeEmojiMap[stripe]) emojiImg.src = stripeEmojiMap[stripe];
+        updatePreview();
+      }
+
+      function formatText(text) {
+        return text
+          .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+          .replace(/\*(.*?)\*/g, "<em>$1</em>")
+          .replace(/`(.*?)`/g, "<code>$1</code>")
+          .replace(/\n/g, "<br>");
+      }
+
+      function formatNumber(x) {
+        if (!x) return "";
+        x = String(x).replace(/,/g, "");
+        const n = Number(x);
+        if (Number.isNaN(n)) return x;
+        return n.toLocaleString("en-US");
+      }
+
+      function formatLuck(x) {
+        if (!x) return "";
+        x = String(x).replace(/,/g, "");
+        const n = Number(x);
+        if (Number.isNaN(n)) return x;
+        return n.toLocaleString("en-US", { maximumFractionDigits: 3 });
+      }
+
+      function getTimeFromTimestamp(timestamp) {
+        const ts = Number(timestamp);
+        if (!Number.isFinite(ts) || ts <= 0) return "";
+        const d = new Date(ts * 1000);
+        if (Number.isNaN(d.getTime())) return "";
+        let h = d.getHours();
+        const m = d.getMinutes();
+        const ampm = h >= 12 ? "PM" : "AM";
+        h = h % 12;
+        if (h === 0) h = 12;
+        const paddedH = String(h).padStart(2, "0");
+        const paddedM = String(m).padStart(2, "0");
+        return `${paddedH}:${paddedM} ${ampm}`;
+      }
+
+      function updatePreview() {
+        const topUsername = document.getElementById("topUsername").value;
+        let desc = document.getElementById("description").value;
+        const rolls = formatNumber(document.getElementById("rolls").value);
+        const rarityRaw = document.getElementById("rarity").value;
+        const fromGlitched = document.getElementById("fromGlitched").checked;
+        const luck = formatLuck(document.getElementById("luck").value);
+        const timestamp = document.getElementById("timestamp").value;
+        const stripe =
+          document.getElementById("stripeColor").value || "#4d5efa";
+        const timestampTime = getTimeFromTimestamp(timestamp);
+        const footerTime = timestampTime ? `Today at ${timestampTime}` : "";
+
+        // Rarity + From Glitched for default
+        let rarityText = "",
+          glitchedText = "";
+        if (stripe.toLowerCase() === "#4d5efa") {
+          if (rarityRaw)
+            rarityText = `, CHANCE OF **1 IN ${formatNumber(rarityRaw)}**`;
+          if (fromGlitched) glitchedText = ` **[From Glitched!]**`;
+        }
+        desc += rarityText + glitchedText;
+
+        // Author
+        const emojiImg = document.getElementById("previewEmoji");
+        if (stripeEmojiMap[stripe]) emojiImg.style.display = "inline";
+        document.getElementById("previewUsername").innerHTML =
+          `<strong>${topUsername}</strong>`;
+
+        // Description blockquote
+        const formatted = formatText(desc).split("<br>");
+        document.querySelector(".desc-text").innerHTML = formatted
+          .map((line) => `<div class="blockquote-line">${line}</div>`)
+          .join("");
+
+        // Stripe color
+        document.querySelector(".stripe").style.background = stripe;
+
+        // Fields
+        const fieldsDiv = document.querySelector(".fields");
+        fieldsDiv.innerHTML = "";
+        if (stripe.toLowerCase() === "#4d5efa") {
+          if (rolls)
+            fieldsDiv.innerHTML += `<div class="field"><strong>Rolls</strong><br>${rolls}</div>`;
+          if (luck)
+            fieldsDiv.innerHTML += `<div class="field"><strong>Luck</strong><br>${luck}</div>`;
+          if (timestamp)
+            fieldsDiv.innerHTML += `<div class="field"><strong>Time Discovered</strong><br>&lt;t:${timestamp}:R&gt;</div>`;
+        } else {
+          if (rolls)
+            fieldsDiv.innerHTML += `<div class="field"><strong>Rolls</strong><br>${rolls}</div>`;
+          if (rarityRaw)
+            fieldsDiv.innerHTML += `<div class="field"><strong>Rarity</strong><br>1 in ${formatNumber(rarityRaw)}</div>`;
+          if (luck)
+            fieldsDiv.innerHTML += `<div class="field"><strong>Luck</strong><br>${luck}</div>`;
+          if (timestamp)
+            fieldsDiv.innerHTML += `<div class="field"><strong>Time Discovered</strong><br>&lt;t:${timestamp}:R&gt;</div>`;
+        }
+
+        document.querySelector(".footer").textContent = footerTime;
+      }
+
+      function generateJSON() {
+        const topUsername = document.getElementById("topUsername").value.trim();
+        let desc = document.getElementById("description").value;
+        const rolls = formatNumber(document.getElementById("rolls").value);
+        const rarityRaw = document.getElementById("rarity").value;
+        const fromGlitched = document.getElementById("fromGlitched").checked;
+        const luck = formatLuck(document.getElementById("luck").value);
+        const timestamp = document.getElementById("timestamp").value;
+        const stripe =
+          document.getElementById("stripeColor").value || "#4d5efa";
+        const timestampTime = getTimeFromTimestamp(timestamp);
+        const footerTime = timestampTime ? `Today at ${timestampTime}` : "";
+
+        // Rarity + From Glitched
+        let rarityText = "",
+          glitchedText = "";
+        if (stripe.toLowerCase() === "#4d5efa") {
+          if (rarityRaw)
+            rarityText = `, CHANCE OF **1 IN ${formatNumber(rarityRaw)}**`;
+          if (fromGlitched) glitchedText = ` **[From Glitched!]**`;
+        }
+        desc += rarityText + glitchedText;
+
+        const discordDesc = desc
+          .split("\n")
+          .map((line) => `> ${line}`)
+          .join("\n");
+
+        const embed = {
+          description: discordDesc,
+          color: parseInt(stripe.replace("#", ""), 16),
+          fields: [],
+          footer: { text: footerTime },
         };
+        if (topUsername.length > 0)
+          embed.author = {
+            name: topUsername,
+            icon_url: stripeEmojiMap[stripe],
+          };
 
-        function updateEmojiByStripe() {
-            const stripe = document.getElementById("stripeColor").value;
-            const emojiImg = document.getElementById("previewEmoji");
-            if (stripeEmojiMap[stripe]) emojiImg.src = stripeEmojiMap[stripe];
-            updatePreview();
-        }
-
-        function formatText(text) {
-            return text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-                .replace(/\*(.*?)\*/g, "<em>$1</em>")
-                .replace(/`(.*?)`/g, "<code>$1</code>")
-                .replace(/\n/g, "<br>");
-        }
-
-        function formatNumber(x) {
-            if (!x) return "";
-            x = String(x).replace(/,/g, "");
-            const n = Number(x);
-            if (Number.isNaN(n)) return x;
-            return n.toLocaleString('en-US');
-        }
-
-        function formatLuck(x) {
-            if (!x) return "";
-            x = String(x).replace(/,/g, "");
-            const n = Number(x);
-            if (Number.isNaN(n)) return x;
-            return n.toLocaleString('en-US', { maximumFractionDigits: 3 });
-        }
-
-        function getTimeFromTimestamp(timestamp) {
-            const ts = Number(timestamp);
-            if (!Number.isFinite(ts) || ts <= 0) return "";
-            const d = new Date(ts * 1000);
-            if (Number.isNaN(d.getTime())) return "";
-            let h = d.getHours();
-            const m = d.getMinutes();
-            const ampm = h >= 12 ? 'PM' : 'AM';
-            h = h % 12;
-            if (h === 0) h = 12;
-            const paddedH = String(h).padStart(2, '0');
-            const paddedM = String(m).padStart(2, '0');
-            return `${paddedH}:${paddedM} ${ampm}`;
-        }
-
-        function updatePreview() {
-            const topUsername = document.getElementById("topUsername").value;
-            let desc = document.getElementById("description").value;
-            const rolls = formatNumber(document.getElementById("rolls").value);
-            const rarityRaw = document.getElementById("rarity").value;
-            const fromGlitched = document.getElementById("fromGlitched").checked;
-            const luck = formatLuck(document.getElementById("luck").value);
-            const timestamp = document.getElementById("timestamp").value;
-            const stripe = document.getElementById("stripeColor").value || "#4d5efa";
-            const timestampTime = getTimeFromTimestamp(timestamp);
-            const footerTime = timestampTime ? `Today at ${timestampTime}` : "";
-
-            // Rarity + From Glitched for default
-            let rarityText = "", glitchedText = "";
-            if (stripe.toLowerCase() === "#4d5efa") {
-                if (rarityRaw) rarityText = `, CHANCE OF **1 IN ${formatNumber(rarityRaw)}**`;
-                if (fromGlitched) glitchedText = ` **[From Glitched!]**`;
-            }
-            desc += rarityText + glitchedText;
-
-            // Author
-            const emojiImg = document.getElementById("previewEmoji");
-            if (stripeEmojiMap[stripe]) emojiImg.style.display = "inline";
-            document.getElementById("previewUsername").innerHTML = `<strong>${topUsername}</strong>`;
-
-            // Description blockquote
-            const formatted = formatText(desc).split("<br>");
-            document.querySelector(".desc-text").innerHTML = formatted.map(line => `<div class="blockquote-line">${line}</div>`).join("");
-
-            // Stripe color
-            document.querySelector(".stripe").style.background = stripe;
-
-            // Fields
-            const fieldsDiv = document.querySelector(".fields");
-            fieldsDiv.innerHTML = "";
-            if (stripe.toLowerCase() === "#4d5efa") {
-                if (rolls) fieldsDiv.innerHTML += `<div class="field"><strong>Rolls</strong><br>${rolls}</div>`;
-                if (luck) fieldsDiv.innerHTML += `<div class="field"><strong>Luck</strong><br>${luck}</div>`;
-                if (timestamp) fieldsDiv.innerHTML += `<div class="field"><strong>Time Discovered</strong><br>&lt;t:${timestamp}:R&gt;</div>`;
-            } else {
-                if (rolls) fieldsDiv.innerHTML += `<div class="field"><strong>Rolls</strong><br>${rolls}</div>`;
-                if (rarityRaw) fieldsDiv.innerHTML += `<div class="field"><strong>Rarity</strong><br>1 in ${formatNumber(rarityRaw)}</div>`;
-                if (luck) fieldsDiv.innerHTML += `<div class="field"><strong>Luck</strong><br>${luck}</div>`;
-                if (timestamp) fieldsDiv.innerHTML += `<div class="field"><strong>Time Discovered</strong><br>&lt;t:${timestamp}:R&gt;</div>`;
-            }
-
-            document.querySelector(".footer").textContent = footerTime;
-        }
-
-        function generateJSON() {
-            const topUsername = document.getElementById("topUsername").value.trim();
-            let desc = document.getElementById("description").value;
-            const rolls = formatNumber(document.getElementById("rolls").value);
-            const rarityRaw = document.getElementById("rarity").value;
-            const fromGlitched = document.getElementById("fromGlitched").checked;
-            const luck = formatLuck(document.getElementById("luck").value);
-            const timestamp = document.getElementById("timestamp").value;
-            const stripe = document.getElementById("stripeColor").value || "#4d5efa";
-            const timestampTime = getTimeFromTimestamp(timestamp);
-            const footerTime = timestampTime ? `Today at ${timestampTime}` : "";
-
-            // Rarity + From Glitched
-            let rarityText = "", glitchedText = "";
-            if (stripe.toLowerCase() === "#4d5efa") {
-                if (rarityRaw) rarityText = `, CHANCE OF **1 IN ${formatNumber(rarityRaw)}**`;
-                if (fromGlitched) glitchedText = ` **[From Glitched!]**`;
-            }
-            desc += rarityText + glitchedText;
-
-            const discordDesc = desc.split("\n").map(line => `> ${line}`).join("\n");
-
-            const embed = { description: discordDesc, color: parseInt(stripe.replace("#", ""), 16), fields: [], footer: { text: footerTime } };
-            if (topUsername.length > 0) embed.author = { name: topUsername, icon_url: stripeEmojiMap[stripe] };
-
-            // Fields
-            if (stripe.toLowerCase() === "#4d5efa") {
-                if (rolls) embed.fields.push({ name: "Rolls", value: rolls, inline: true });
-                if (luck) embed.fields.push({ name: "Luck", value: luck, inline: true });
-                if (timestamp) embed.fields.push({ name: "Time Discovered", value: `<t:${timestamp}:R>`, inline: true });
-            } else {
-                if (rolls) embed.fields.push({ name: "Rolls", value: rolls, inline: true });
-                if (rarityRaw) embed.fields.push({ name: "Rarity", value: `1 in ${formatNumber(rarityRaw)}`, inline: true });
-                if (luck) embed.fields.push({ name: "Luck", value: luck, inline: true });
-                if (timestamp) embed.fields.push({ name: "Time Discovered", value: `<t:${timestamp}:R>`, inline: true });
-            }
-
-            document.getElementById("output").textContent = JSON.stringify({ content: null, embeds: [embed], attachments: [] }, null, 2);
-        }
-
-        function copyJSON() {
-            const output = document.getElementById("output").textContent;
-            if (!output) {
-                alert("No JSON to copy. Generate JSON first.");
-                return;
-            }
-            navigator.clipboard.writeText(output).then(() => {
-                alert("JSON copied to clipboard!");
-            }).catch((err) => {
-                console.error("Clipboard write failed", err);
-                alert("Copy failed; please copy manually.");
+        // Fields
+        if (stripe.toLowerCase() === "#4d5efa") {
+          if (rolls)
+            embed.fields.push({ name: "Rolls", value: rolls, inline: true });
+          if (luck)
+            embed.fields.push({ name: "Luck", value: luck, inline: true });
+          if (timestamp)
+            embed.fields.push({
+              name: "Time Discovered",
+              value: `<t:${timestamp}:R>`,
+              inline: true,
+            });
+        } else {
+          if (rolls)
+            embed.fields.push({ name: "Rolls", value: rolls, inline: true });
+          if (rarityRaw)
+            embed.fields.push({
+              name: "Rarity",
+              value: `1 in ${formatNumber(rarityRaw)}`,
+              inline: true,
+            });
+          if (luck)
+            embed.fields.push({ name: "Luck", value: luck, inline: true });
+          if (timestamp)
+            embed.fields.push({
+              name: "Time Discovered",
+              value: `<t:${timestamp}:R>`,
+              inline: true,
             });
         }
 
-        updateEmojiByStripe();
-        updatePreview();
+        document.getElementById("output").textContent = JSON.stringify(
+          { content: null, embeds: [embed], attachments: [] },
+          null,
+          2,
+        );
+      }
+
+      function copyJSON() {
+        const output = document.getElementById("output").textContent;
+        if (!output) {
+          alert("No JSON to copy. Generate JSON first.");
+          return;
+        }
+        navigator.clipboard
+          .writeText(output)
+          .then(() => {
+            alert("JSON copied to clipboard!");
+          })
+          .catch((err) => {
+            console.error("Clipboard write failed", err);
+            alert("Copy failed; please copy manually.");
+          });
+      }
+
+      updateEmojiByStripe();
+      updatePreview();
     </script>
-
-</body>
-
+  </body>
 </html>

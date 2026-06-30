@@ -313,6 +313,13 @@
           oninput="updatePreview()"
         />
 
+        <label>Roblox ID</label>
+        <input
+          id="robloxId"
+          placeholder="optional"
+          oninput="updatePreview()"
+        />
+
         <label>Description</label>
         <textarea
           id="description"
@@ -512,6 +519,7 @@
 
       function updatePreview() {
         const topUsername = document.getElementById("topUsername").value;
+        const robloxId = document.getElementById("robloxId").value.trim();
         let desc = document.getElementById("description").value;
         const rolls = formatNumber(document.getElementById("rolls").value);
         const rarityRaw = document.getElementById("rarity").value;
@@ -536,8 +544,9 @@
         // Author
         const emojiImg = document.getElementById("previewEmoji");
         if (stripeEmojiMap[stripe]) emojiImg.style.display = "inline";
-        document.getElementById("previewUsername").innerHTML =
-          `<strong>${topUsername}</strong>`;
+        document.getElementById("previewUsername").innerHTML = robloxId
+          ? `<a href="https://www.roblox.com/users/${robloxId}/profile" target="_blank" rel="noopener noreferrer"><strong>${topUsername}</strong></a>`
+          : `<strong>${topUsername}</strong>`;
 
         // Description blockquote
         const formatted = formatText(desc).split("<br>");
@@ -574,6 +583,7 @@
 
       function generateJSON() {
         const topUsername = document.getElementById("topUsername").value.trim();
+        const robloxId = document.getElementById("robloxId").value.trim();
         let desc = document.getElementById("description").value;
         const rolls = formatNumber(document.getElementById("rolls").value);
         const rarityRaw = document.getElementById("rarity").value;
@@ -606,11 +616,15 @@
           fields: [],
           footer: { text: footerTime },
         };
-        if (topUsername.length > 0)
+        if (topUsername.length > 0) {
           embed.author = {
             name: topUsername,
             icon_url: stripeEmojiMap[stripe],
           };
+          if (robloxId) {
+            embed.author.url = `https://www.roblox.com/users/${robloxId}/profile`;
+          }
+        }
 
      
         if (stripe.toLowerCase() === "#4d5efa") {

@@ -321,27 +321,22 @@
         ></textarea>
 
         <label>Star & Stripe Color</label>
-        <select
-          id="stripeColor"
-          onchange="
-            updatePreview();
-            updateEmojiByStripe();
-          "
-        >
+        <select id="stripeColor" onchange="handleStripeChange()">
           <option value="#4d5efa">Normal Global</option>
           <option value="#a5dffa">Luminosity</option>
           <option value="#5b50d1">Breakthrough</option>
           <option value="#874dfa">Oblivion</option>
           <option value="#5844ba">Memory</option>
           <option value="#fa4d4d">PIXELATION</option>
-          <option value="#24b9be">Leviathan</option>
           <option value="#808080">EQUINOX</option>
+          <option value="#b07bff">Dream Catcher</option>
+          <option value="#24b9be">Leviathan</option>
           <option value="#410594">Monarch</option>
           <option value="#ebff7a">ASTRAIOS</option>
           <option value="#c96fed">Dreammetric</option>
           <option value="#090909">Oppression</option>
           <option value="#0436a1">Illusionary</option>
-          <option value="#b07bff">Dream Catcher</option>
+          
         </select>
         <label>Rolls</label>
         <input id="rolls" placeholder="---,---,---" oninput="updatePreview()" />
@@ -430,8 +425,44 @@
         "#090909": "https://cdn.solsstattracker.com/stars/Oppression.png",
         "#0436a1": "https://images-ext-1.discordapp.net/external/hYAOyw-uMZaacUfcZOTxL-LAiIm3dFT3g929IjK4Ico/https/cdn.solsstattracker.com/stars/Illusionary.png",
         "#ebff7a": "https://images-ext-1.discordapp.net/external/NYQPV0g-2OC70JR2X4u5-SqtvVjPkfL2A2Za03yqX0Q/https/cdn.solsstattracker.com/stars/ASTRAIOS.png",
-        "#b07bff": "https://images-ext-1.discordapp.net/external/Wu3WtextUkmOrFST93mAKIoO5SrzY07t2UfcTVojJT8/https/cdn.solsstattracker.com/stars/Dream%2520Catcher.png"
+        "#b07bff": "https://images-ext-1.discordapp.net/external/Wu3WtextUkmOrFST93mAKIoO5SrzY07t2UfcTVojJT8/https/cdn.solsstattracker.com/stars/Dream%2520Catcher.png",
       };
+
+
+      
+      const stripeDescriptionMap = {
+        "#4d5efa": "**DisplayName(@username)** HAS FOUND **aura**, CHANCE OF", // Normal Global
+        "#a5dffa": "**The Blinding Light** has devoured **Username**", // Luminosity
+        "#5b50d1": "**DisplayName(@username)** has found **???**, chance of **1 in 1,999,999,999 [BREAKTHROUGH]**", // Breakthrough
+        "#874dfa": "**DisplayName(@username)** has discovered **[The Truth]**", // Oblivion
+        "#5844ba": "**DisplayName(@username)** HAS FOUND **Memory, The Fallen!**", // Memory
+        "#fa4d4d": "**Username** Has Become **PIXELATED!**", // PIXELATION
+        "#808080": "**DisplayName(@username)** Has Found The **[**???????**]** between POSITIVE and **NEGATIVE.**", // EQUINOX
+        "#b07bff": "**DisplayName(@username)** is having a **Never-Ending Dream**.", // Dream Catcher
+        "#24b9be": "**DisplayName(@username)** has tamed the **Ruler of Beneath**.", // Leviathan
+        "#410594": "All hail, The **DisplayName(@username).**", // Monarch
+        "#ebff7a": "**DisplayName(@username)** has closed **the Singularity.**", // ASTRAIOS
+        "#c96fed": "**DisplayName(@username)** didn't wake up.", // Dreammetric
+        "#090909": "**DisplayName(@username)** has stood before **the God**.", // Oppression
+        "#0436a1": "**DisplayName(@username)** has become **███'█ Perfect Puppet.**", // Illusionary
+      };
+      
+      function handleStripeChange() {
+        updateEmojiByStripe();
+        autofillDescriptionByStripe();
+        updatePreview();
+      }
+
+      function autofillDescriptionByStripe() {
+        const stripe = document.getElementById("stripeColor").value;
+        const descriptionBox = document.getElementById("description");
+        const autoDescription = stripeDescriptionMap[stripe];
+
+       
+        if (autoDescription && autoDescription.trim() !== "") {
+          descriptionBox.value = autoDescription;
+        }
+      }
 
       function updateEmojiByStripe() {
         const stripe = document.getElementById("stripeColor").value;
@@ -492,7 +523,7 @@
         const timestampTime = getTimeFromTimestamp(timestamp);
         const footerTime = timestampTime ? `Today at ${timestampTime}` : "";
 
-        // Rarity + From Glitched for default
+      
         let rarityText = "",
           glitchedText = "";
         if (stripe.toLowerCase() === "#4d5efa") {
@@ -554,7 +585,7 @@
         const timestampTime = getTimeFromTimestamp(timestamp);
         const footerTime = timestampTime ? `Today at ${timestampTime}` : "";
 
-        // Rarity + From Glitched
+       
         let rarityText = "",
           glitchedText = "";
         if (stripe.toLowerCase() === "#4d5efa") {
@@ -581,7 +612,7 @@
             icon_url: stripeEmojiMap[stripe],
           };
 
-        // Fields
+     
         if (stripe.toLowerCase() === "#4d5efa") {
           if (rolls)
             embed.fields.push({ name: "Rolls", value: rolls, inline: true });

@@ -316,7 +316,7 @@
         <label>Roblox ID</label>
         <input
           id="robloxId"
-          placeholder="optional"
+          placeholder="123456789"
           oninput="updatePreview()"
         />
 
@@ -369,7 +369,7 @@
         <label>Luck</label>
         <input id="luck" placeholder="---,---.---" oninput="updatePreview()" />
 
-        <label>Unix Timestamp</label>
+        <label>Unix Timestamp (Time Discovered + Footer)</label>
         <input
           id="timestamp"
           placeholder="0000000000"
@@ -502,19 +502,50 @@
         return n.toLocaleString("en-US", { maximumFractionDigits: 3 });
       }
 
-      function getTimeFromTimestamp(timestamp) {
-        const ts = Number(timestamp);
-        if (!Number.isFinite(ts) || ts <= 0) return "";
+      function getDateFromUnixTimestamp(timestamp) {
+        const ts = Number(String(timestamp).trim());
+        if (!Number.isFinite(ts) || ts <= 0) return null;
         const d = new Date(ts * 1000);
-        if (Number.isNaN(d.getTime())) return "";
-        let h = d.getHours();
-        const m = d.getMinutes();
+        if (Number.isNaN(d.getTime())) return null;
+        return d;
+      }
+
+      function formatClockTime(date, padHour = true) {
+        let h = date.getHours();
+        const m = date.getMinutes();
         const ampm = h >= 12 ? "PM" : "AM";
         h = h % 12;
         if (h === 0) h = 12;
-        const paddedH = String(h).padStart(2, "0");
+        const hourText = padHour ? String(h).padStart(2, "0") : String(h);
         const paddedM = String(m).padStart(2, "0");
-        return `${paddedH}:${paddedM} ${ampm}`;
+        return `${hourText}:${paddedM} ${ampm}`;
+      }
+
+      function getTimeFromTimestamp(timestamp) {
+        const d = getDateFromUnixTimestamp(timestamp);
+        return d ? formatClockTime(d) : "";
+      }
+
+      function getDiscordFooterFromTimestamp(timestamp) {
+        const d = getDateFromUnixTimestamp(timestamp);
+        if (!d) return "";
+
+        const now = new Date();
+        const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const dateStart = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+        const diffDays = Math.round((todayStart - dateStart) / 86400000);
+        const time = formatClockTime(d);
+
+        if (diffDays === 0) return `Today at ${time}`;
+        if (diffDays === 1) return `Yesterday at ${time}`;
+        if (diffDays === -1) return `Tomorrow at ${time}`;
+
+        return `${d.toLocaleDateString("en-US")} ${formatClockTime(d, false)}`;
+      }
+
+      function getEmbedTimestampFromUnix(timestamp) {
+        const d = getDateFromUnixTimestamp(timestamp);
+        return d ? d.toISOString() : "";
       }
 
       function updatePreview() {
@@ -528,8 +559,7 @@
         const timestamp = document.getElementById("timestamp").value;
         const stripe =
           document.getElementById("stripeColor").value || "#4d5efa";
-        const timestampTime = getTimeFromTimestamp(timestamp);
-        const footerTime = timestampTime ? `Today at ${timestampTime}` : "";
+        const footerTime = getDiscordFooterFromTimestamp(timestamp);
 
       
         let rarityText = "",
@@ -592,8 +622,7 @@
         const timestamp = document.getElementById("timestamp").value;
         const stripe =
           document.getElementById("stripeColor").value || "#4d5efa";
-        const timestampTime = getTimeFromTimestamp(timestamp);
-        const footerTime = timestampTime ? `Today at ${timestampTime}` : "";
+        const footerTime = getDiscordFooterFromTimestamp(timestamp);
 
        
         let rarityText = "",
@@ -614,8 +643,12 @@
           description: discordDesc,
           color: parseInt(stripe.replace("#", ""), 16),
           fields: [],
-          footer: { text: footerTime },
         };
+
+        const embedTimestamp = getEmbedTimestampFromUnix(timestamp);
+        if (embedTimestamp) {
+          embed.timestamp = embedTimestamp;
+        }
         if (topUsername.length > 0) {
           embed.author = {
             name: topUsername,
@@ -665,6 +698,7 @@
       }
 
       function copyJSON() {
+        generateJSON();
         const output = document.getElementById("output").textContent;
         if (!output) {
           alert("No JSON to copy. Generate JSON first.");
